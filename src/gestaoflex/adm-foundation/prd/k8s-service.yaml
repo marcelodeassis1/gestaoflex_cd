@@ -1,0 +1,17 @@
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: adm-foundation
+  namespace: gflex
+  labels:
+    app: adm-foundation
+spec:
+  selector:
+    app: adm-foundation
+  ports:
+  - name: server
+    port: 3303
+    targetPort: 3303
+
+---    

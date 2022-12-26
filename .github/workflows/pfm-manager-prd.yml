@@ -1,11 +1,30 @@
-name: PFM-Manager - Deploy(PRD)
+name: PFM-Manager - Deploy
 
 on:
   repository_dispatch:
-    types: [pfm-manager-prd-new-image]
+    types: 
+      - pfm-manager-hom-new-image
+      - pfm-manager-prd-new-image
 jobs:
-  build:
+  deploy_hom:
     runs-on: ubuntu-latest
+    if: ${{ github.event.client_payload.image == 'develop' }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Update Image Version
+      id: imgupd
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.spec.template.spec.containers[0].image = "${{ github.event.client_payload.image }}"' -i src/gestaoflex/pfm-manager/hom/k8s-deployment.yaml
+      
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply image name changes
+
+  deploy_prd:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.client_payload.image == 'master' }}
     steps:
     - uses: actions/checkout@v3
 
@@ -17,4 +36,4 @@ jobs:
       
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: Apply image name changes
+        commit_message: Apply image name changes        

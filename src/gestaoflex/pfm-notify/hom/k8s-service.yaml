@@ -1,0 +1,16 @@
+---
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: pfm-notify
+  namespace: gflex-hom
+spec:
+  selector:
+    app: pfm-notify
+  ports:
+  - name: server
+    port: 3303
+    targetPort: 3303
+
+---

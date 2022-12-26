@@ -1,0 +1,15 @@
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: pfm-auth
+  namespace: gflex-hom
+spec:
+  selector:
+    app: pfm-auth
+  ports:
+  - name: server
+    port: 3303
+    targetPort: 3303
+
+---
