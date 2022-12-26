@@ -8,7 +8,7 @@ on:
 jobs:
   deploy_hom:
     runs-on: ubuntu-latest
-    if: ${{ github.event.client_payload.image == 'develop' }}
+    if: ${{ github.event.client_payload.image == 'refs/heads/develop' }}
     steps:
     - uses: actions/checkout@v3
 
@@ -24,7 +24,7 @@ jobs:
 
   deploy_prd:
     runs-on: ubuntu-latest
-    if: ${{ github.event.client_payload.image == 'master' }}
+    if: ${{ github.event.client_payload.image == 'refs/heads/master' }}
     steps:
     - uses: actions/checkout@v3
 
