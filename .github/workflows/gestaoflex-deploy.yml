@@ -1,0 +1,51 @@
+name: Gestao Flex - Deploy
+
+on:
+  repository_dispatch:
+    types: 
+      - argocd-update
+jobs:
+  ######################################################################
+  #######                        PRODUÇÃO                       ########
+  ######################################################################
+  deploy_prd:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.client_payload.branch == 'refs/heads/master' }}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    # PFM-MANAGER
+    - name: Update Version - pfm-manager (prd)
+      if: ${{ github.event.client_payload.app == 'pfm-manager' }}  
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.spec.template.spec.containers[0].image = "${{ github.event.client_payload.image }}"' -i src/gestaoflex/pfm-manager/prd/k8s-deployment.yaml
+   
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply image name changes
+
+  ######################################################################
+  #######                        HOMOLOGACAO                    ########
+  ######################################################################
+  deploy_hom:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.client_payload.branch == 'refs/heads/develop' }}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    #PFM-MANAGER
+    - name: Update Version - pfm-manager (hom)
+      if: ${{ github.event.client_payload.app == 'pfm-manager' }}      
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.spec.template.spec.containers[0].image = "${{ github.event.client_payload.image }}"' -i src/gestaoflex/pfm-manager/hom/k8s-deployment.yaml
+
+
+
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply image name changes
