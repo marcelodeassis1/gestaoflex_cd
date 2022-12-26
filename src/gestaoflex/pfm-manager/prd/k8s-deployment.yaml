@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: pfm-manager-container
-          image: gestaoflex/pfm-manager:1.0.3
+          image: gestaoflex/pfm-manager:1.0.7
           env:
             - name: URL_DATABASE
               valueFrom:
@@ -34,4 +34,3 @@ spec:
               value: http://loki-tempo:14268/tempo/api/traces
           ports:
             - containerPort: 3303
-
