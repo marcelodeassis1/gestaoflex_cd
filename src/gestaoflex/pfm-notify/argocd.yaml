@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pfm-notify
+  name: pfm-notify-hom
   namespace: argocd
 spec:
   destination:
@@ -10,7 +10,7 @@ spec:
   project: gflex
   source:
     path: src/gestaoflex/pfm-notify/hom
-    repoURL: git@github.com:marcelodeassis1/gestaoflex.git
+    repoURL: git@github.com:marcelodeassis1/gestaoflex_cd.git
     targetRevision: HEAD
     
   syncPolicy: 
@@ -35,7 +35,7 @@ spec:
   project: gflex
   source:
     path: src/gestaoflex/pfm-notify/prd
-    repoURL: git@github.com:marcelodeassis1/gestaoflex.git
+    repoURL: git@github.com:marcelodeassis1/gestaoflex_cd.git
     targetRevision: HEAD
     
   syncPolicy: 
