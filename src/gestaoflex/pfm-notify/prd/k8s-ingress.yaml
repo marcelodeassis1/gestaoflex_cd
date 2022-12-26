@@ -1,0 +1,38 @@
+# IngresRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pfm-notify
+  namespace: gflex
+  annotations:
+    konghq.com/strip-path: "false"
+    konghq.com/plugins: kong-cors
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    name: pfm-notify
+spec:
+  ingressClassName: kong
+  rules:
+    - host: api.gestaoflex.net
+      http:
+        paths:
+          - path: /pfm/notify
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pfm-notify
+                port: 
+                  number: 3303
+          - path: /socket.io
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pfm-notify
+                port: 
+                  number: 3303
+      
+  tls:
+    - secretName: ssl-gflexnet
+      hosts:
+        - api.gestaoflex.net

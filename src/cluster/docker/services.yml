@@ -1,0 +1,68 @@
+version: "3.7"
+
+networks:
+  pfm-net:
+    name: pfm-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.1.0/24
+
+services:
+  #######################################
+  # PFM AUTH
+  #######################################
+  pfm-auth:
+    image: gestaoflex/pfm-auth:0.2.16
+    container_name: pfm-auth
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      URL_DATABASE: postgres://postgres:123456@postgresql:5432/gflex_manager
+      URL_BROKER: amqp://admin:admin@broker:5672
+    ports:
+      - "3000:3000"
+
+  #######################################
+  # PFM MANAGER
+  #######################################
+  pfm-manager:
+    image: gestaoflex/pfm-manager:0.2.16
+    container_name: pfm-manager
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      URL_DATABASE: postgres://postgres:123456@postgresql:5432/gflex_manager
+      URL_BROKER: amqp://admin:admin@broker:5672
+    ports:
+      - "3001:3001"
+  #######################################
+  # PFM NOTIFY
+  #######################################
+  pfm-notify:
+    image: gestaoflex/pfm-notify:0.2.16
+    container_name: pfm-notify
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      URL_DATABASE: postgres://postgres:123456@postgresql:5432/gflex_manager
+      URL_BROKER: amqp://admin:admin@broker:5672
+    ports:
+      - "3002:3002"
+  #######################################
+  # ADM FOUNDATION
+  #######################################
+  adm-foundation:
+    image: gestaoflex/adm-foundation:0.2.16
+    container_name: adm-foundation
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      URL_DATABASE: postgres://postgres:123456@postgresql:5432/gflex_prod
+      URL_BROKER: amqp://admin:admin@broker:5672
+    ports:
+      - "3020:3020"

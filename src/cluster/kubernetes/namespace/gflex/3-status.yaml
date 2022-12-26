@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: gflex
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: gflex
+spec:
+  selector:
+    app: nginx
+  ports:
+    - name: nginx
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+  namespace: gflex
+  annotations:
+    konghq.com/strip-path: "false"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    name: nginx
+spec:
+  ingressClassName: kong
+  rules:
+  - host: api.gestaoflex.com
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: /
+        backend:
+          service:
+            name: nginx
+            port: 
+              number: 80
+  - host: status.gestaoflex.com
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: /
+        backend:
+          service:
+            name: nginx
+            port: 
+              number: 80
+  tls:
+    - secretName: ssl-gflexcom
+      hosts:
+        - api.gestaoflex.com
+        - status.gestaoflex.com

@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: "pfm-manager"
+    metrics_path: /pfm/manager/metrics
+    static_configs:
+      - targets: ['apidev.gestaoflex.net']
+  - job_name: "pfm-auth"
+    metrics_path: /pfm/auth/metrics
+    static_configs:
+      - targets: ['apidev.gestaoflex.net']        
+  - job_name: "pfm-notify"
+    metrics_path: /pfm/notify/metrics
+    static_configs:
+      - targets: ['apidev.gestaoflex.net']        
+  - job_name: "adm-foundation"
+    metrics_path: /adm/foundation/metrics
+    static_configs:
+      - targets: ['apidev.gestaoflex.net']                

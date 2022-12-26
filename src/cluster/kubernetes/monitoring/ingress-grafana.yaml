@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    konghq.com/strip-path: "false"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    name: grafana
+spec:
+  ingressClassName: kong
+  rules:
+  - host: grafana.gestaoflex.net
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: /
+        backend:
+          service:
+            name: loki-stack-grafana
+            port: 
+              number: 80
+  tls:
+    - secretName: ssl-gflexnet
+      hosts:
+        - grafana.gestaoflex.net

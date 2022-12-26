@@ -1,0 +1,38 @@
+version: "3.7"
+
+#networks:
+#  pfm-net:
+#    name: pfm-net
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.1.1.0/24
+
+services:
+  #######################################
+  # PROMETHEUS
+  #######################################
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - '/home/master/prometheus-services.yml:/etc/prometheus/prometheus.yml'
+
+  #######################################
+  # GRAFANA
+  #######################################
+  grafana:
+    image: grafana/grafana:8.5.0
+    container_name: grafana
+    restart: always
+    environment:
+      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: 'Admin'
+    ports:
+      - "3000:3000"
+    volumes:
+      - '/home/master/grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasources.yml'  

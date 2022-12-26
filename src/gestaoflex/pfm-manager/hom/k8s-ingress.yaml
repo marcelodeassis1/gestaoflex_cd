@@ -1,0 +1,31 @@
+# IngresRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pfm-manager
+  namespace: gflex-hom
+  annotations:
+    konghq.com/strip-path: "false"
+    konghq.com/plugins: kong-cors
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    name: pfm-manager
+spec:
+  ingressClassName: kong
+  rules:
+    - host: api.gestaoflex.net
+      http:
+        paths:
+          - path: /pfm/manager
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pfm-manager
+                port: 
+                  number: 3303
+      
+  tls:
+    - secretName: ssl-gflexnet
+      hosts:
+        - api.gestaoflex.net

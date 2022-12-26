@@ -1,0 +1,55 @@
+# Deployment
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: gflex
+  name: adm-foundation
+  labels: 
+    app: adm-foundation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adm-foundation
+  template:
+    metadata:
+      labels:
+        app: adm-foundation
+    spec:
+      containers:
+      - name: adm-foundation-container
+        image: gestaoflex/adm-foundation:latest
+        env:
+          - name: URL_DATABASE
+            valueFrom: 
+              secretKeyRef:
+                key: conn_db_client
+                name: gflex-connect
+          - name: URL_BROKER
+            valueFrom: 
+              secretKeyRef:                
+                key: conn_broker
+                name: gflex-connect
+          - name: OTEL_EXPORTER_ENDPOINT
+            value: http://loki-tempo:14268/tempo/api/traces                
+        ports: 
+          - containerPort: 3303
+
+---
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: adm-foundation
+  namespace: gflex
+  labels:
+    app: adm-foundation
+spec:
+  selector:
+    app: adm-foundation
+  ports:
+  - name: server
+    port: 3303
+    targetPort: 3303
+
+---    

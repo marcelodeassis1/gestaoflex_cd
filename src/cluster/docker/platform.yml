@@ -1,0 +1,160 @@
+version: "3.7"
+
+networks:
+  pfm-net:
+    name: pfm-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.1.0/24
+    
+
+services:
+  
+  #######################################
+  # PORTAINER -       - "\\.\pipe\docker_engine:\\.\pipe\docker_engine"
+  #######################################
+  portainer:
+    image: gestaoflex/portainer:2.5
+    container_name: portainer
+    restart: always
+    networks:
+      - pfm-net
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${VOLUME_BASE}/var/data/portainer:/data"
+    ports:
+      - "9100:9000"
+
+  #######################################
+  # PGADMIN 5
+  #######################################
+  #pgadmin:
+  #  image: dpage/pgadmin:5.0
+  #  container_name: pgadmin
+  #  restart: always
+  #  networks:
+  #    - pfm-net
+  #  environment:
+  #    PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_USER}
+  #    PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASS}
+  #  volumes:
+  #    - "${VOLUME_BASE}/var/lib/pgadmin:/var/lib/pgadmin"
+  #    - "${VOLUME_BASE}/tmp/pgadmin/servers.json:/servers.json"
+  #  ports:
+  #    - "9001:80"
+
+  #######################################
+  # RUN Rabbit MQ
+  #######################################
+  broker:
+    image: gestaoflex/rabbit:3.8
+    container_name: broker
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "4369:4369"
+      - "5671:5671"  
+      - "5672:5672"  
+      - "15671:15671"              
+      - "15672:15672"
+      - "25672:25672"
+      - "25676:25676"
+
+  #######################################
+  # RUN POSTGRESQL
+  #######################################
+  postgresql:
+    image: postgres:11.11
+    container_name: postgresql
+    restart: always
+    networks:
+      - pfm-net
+    environment:
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5433:5432"
+    volumes:
+      - "//e/docker/volumes/postgresql-11.11:/var/lib/postgresql/data"
+
+  #######################################
+  # RUN ELASTICSEARCH
+  #######################################
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+    container_name: elasticsearch
+    environment:
+    - bootstrap.memory_lock=true
+    - cluster.name=docker-cluster
+    - cluster.routing.allocation.disk.threshold_enabled=false
+    - discovery.type=single-node
+    - ES_JAVA_OPTS=-XX:UseAVX=2 -Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+    - "//e/docker/volumes/elasticsearch/data:/usr/share/elasticsearch/data"
+    ports:
+    - 9200:9200
+    networks:
+    - pfm-net
+    healthcheck:
+      interval: 20s
+      retries: 10
+      test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"' 
+
+  #######################################
+  # RUN ELASTICSEARCH - APM SERVER
+  #######################################
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.11.0
+    container_name: apm-server
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
+    cap_drop: ["ALL"]
+    ports:
+    - 8200:8200
+    networks:
+    - pfm-net
+    command: >
+       apm-server -e
+         -E apm-server.rum.enabled=true
+         -E setup.kibana.host=kibana:5601
+         -E setup.template.settings.index.number_of_replicas=0
+         -E apm-server.kibana.enabled=true
+         -E apm-server.kibana.host=kibana:5601
+         -E output.elasticsearch.hosts=["elasticsearch:9200"]
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+
+  #######################################
+  # RUN ELASTICSEARCH - KIBANA
+  #######################################
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.11.0
+    container_name: kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+    - 5601:5601
+    networks:
+    - pfm-net
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:5601/api/status

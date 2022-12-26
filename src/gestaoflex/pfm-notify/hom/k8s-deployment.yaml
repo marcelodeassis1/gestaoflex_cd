@@ -1,0 +1,53 @@
+# Deployment
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: gflex-hom
+  name: pfm-notify
+  labels: 
+    app: pfm-notify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pfm-notify
+  template:
+    metadata:
+      labels:
+        app: pfm-notify
+    spec:
+      containers:
+      - name: pfm-notify-container
+        image: gestaoflex/pfm-notify:latest
+        env:
+          - name: URL_DATABASE
+            valueFrom: 
+              secretKeyRef:
+                key: conn_db_manager
+                name: gflex-hom-connect
+          - name: URL_BROKER
+            valueFrom: 
+              secretKeyRef:                
+                key: conn_broker
+                name: gflex-hom-connect
+          - name: OTEL_EXPORTER_ENDPOINT
+            value: http://loki-tempo:14268/tempo/api/traces                
+        ports: 
+          - containerPort: 3303
+
+---
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: pfm-notify
+  namespace: gflex-hom
+spec:
+  selector:
+    app: pfm-notify
+  ports:
+  - name: server
+    port: 3303
+    targetPort: 3303
+
+---

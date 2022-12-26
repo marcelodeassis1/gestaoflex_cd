@@ -1,0 +1,27 @@
+loki:
+  enabled: true
+  isDefault: false
+  jsonData:
+    derivedFields:
+      - datasourceName: Tempo
+        matcherRegex: "(?:traceID|trace_id)=(\\w+)"
+        name: TraceID
+        url: "${__value.raw}"
+
+promtail:
+  enabled: true
+  config:
+    lokiAddress: http://{{ .Release.Name }}:3100/loki/api/v1/push
+
+grafana:
+  enabled: true
+  sidecar:
+    datasources:
+      enabled: true
+      maxLines: 1000
+  image:
+    tag: 8.3.5
+
+prometheus:
+  enabled: true
+  isDefault: false

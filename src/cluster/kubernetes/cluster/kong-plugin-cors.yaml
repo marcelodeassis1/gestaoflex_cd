@@ -1,0 +1,33 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: kong-cors
+  namespace: gflex-hom
+config: 
+  origins: 
+  - https://app.site.net
+  - https://app.site.com
+  - https://login.site.net
+  - https://login.site.com
+  methods:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - OPTIONS
+  headers:
+  - Origin
+  - Accept
+  - Accept-Version
+  - Content-Length
+  - Content-MD5
+  - Content-Type
+  - Date
+  - X-Auth-Token
+  - Authorization
+  exposed_headers:
+  - X-Auth-Token
+  credentials: true
+  max_age: 3600
+  preflight_continue: false
+plugin: cors

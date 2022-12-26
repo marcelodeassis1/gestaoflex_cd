@@ -1,0 +1,31 @@
+# IngresRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adm-foundation
+  namespace: gflex
+  annotations:
+    konghq.com/strip-path: "false"
+    konghq.com/plugins: kong-cors
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    name: adm-foundation
+spec:
+  ingressClassName: kong
+  rules:
+    - host: api.gestaoflex.net
+      http:
+        paths:
+          - path: /adm/foundation
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: adm-foundation
+                port: 
+                  number: 3303
+      
+  tls:
+    - secretName: ssl-gflexnet
+      hosts:
+        - api.gestaoflex.net
