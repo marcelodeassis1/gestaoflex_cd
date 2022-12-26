@@ -25,8 +25,8 @@ jobs:
       if: ${{ github.event.client_payload.branch == 'refs/heads/master' }}
       id: imgupd
       uses: mikefarah/yq@master
-        with:
-          cmd: yq eval '.spec.template.spec.containers[0].image = "${{ github.event.client_payload.image }}"' -i src/gestaoflex/pfm-manager/prd/k8s-deployment.yaml
+      with:
+        cmd: yq eval '.spec.template.spec.containers[0].image = "${{ github.event.client_payload.image }}"' -i src/gestaoflex/pfm-manager/prd/k8s-deployment.yaml
    
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
