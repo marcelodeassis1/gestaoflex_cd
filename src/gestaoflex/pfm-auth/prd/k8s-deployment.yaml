@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: pfm-auth-container
-        image: gestaoflex/pfm-auth:latest
+        image: gestaoflex/pfm-auth:1.0.1
         env:
           - name: URL_DATABASE
             valueFrom: 
