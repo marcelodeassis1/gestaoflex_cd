@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: adm-foundation-container
-          image: gestaoflex/adm-foundation:1.0.6-dev
+          image: gestaoflex/adm-foundation:1.0.7-dev
           env:
             - name: URL_DATABASE
               valueFrom:
