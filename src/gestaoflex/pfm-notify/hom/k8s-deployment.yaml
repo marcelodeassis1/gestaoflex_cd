@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: pfm-notify-container
-          image: gestaoflex/pfm-notify:1.0.4-dev
+          image: gestaoflex/pfm-notify:1.0.5-dev
           env:
             - name: URL_DATABASE
               valueFrom:
