@@ -4,7 +4,7 @@ apiVersion: apps/v1
 metadata:
   namespace: gflex-hom
   name: pfm-manager
-  labels: 
+  labels:
     app: pfm-manager
 spec:
   replicas: 1
@@ -17,21 +17,20 @@ spec:
         app: pfm-manager
     spec:
       containers:
-      - name: pfm-manager-container
-        image: gestaoflex/pfm-manager:latest
-        env:
-          - name: URL_DATABASE
-            valueFrom: 
-              secretKeyRef:
-                key: conn_db_manager
-                name: gflex-hom-connect
-          - name: URL_BROKER
-            valueFrom: 
-              secretKeyRef:                
-                key: conn_broker
-                name: gflex-hom-connect
-          - name: OTEL_EXPORTER_ENDPOINT
-            value: http://loki-tempo:14268/tempo/api/traces
-        
-        ports: 
-          - containerPort: 3303
+        - name: pfm-manager-container
+          image: gestaoflex/pfm-manager:1.0.6-dev
+          env:
+            - name: URL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: conn_db_manager
+                  name: gflex-hom-connect
+            - name: URL_BROKER
+              valueFrom:
+                secretKeyRef:
+                  key: conn_broker
+                  name: gflex-hom-connect
+            - name: OTEL_EXPORTER_ENDPOINT
+              value: http://loki-tempo:14268/tempo/api/traces
+          ports:
+            - containerPort: 3303

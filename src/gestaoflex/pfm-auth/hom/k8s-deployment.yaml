@@ -4,7 +4,7 @@ apiVersion: apps/v1
 metadata:
   namespace: gflex-hom
   name: pfm-auth
-  labels: 
+  labels:
     app: pfm-auth
 spec:
   replicas: 1
@@ -17,21 +17,21 @@ spec:
         app: pfm-auth
     spec:
       containers:
-      - name: pfm-auth-container
-        image: gestaoflex/pfm-auth:latest
-        env:
-          - name: URL_DATABASE
-            valueFrom: 
-              secretKeyRef:
-                key: conn_db_manager
-                name: gflex-hom-connect
-          - name: URL_BROKER
-            valueFrom: 
-              secretKeyRef:                
-                key: conn_broker
-                name: gflex-hom-connect
-          - name: OTEL_EXPORTER_ENDPOINT
-            value: http://loki-tempo:14268/tempo/api/traces                
-        ports: 
-          - name: server
-            containerPort: 3303
+        - name: pfm-auth-container
+          image: gestaoflex/pfm-auth:1.0.3-dev
+          env:
+            - name: URL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: conn_db_manager
+                  name: gflex-hom-connect
+            - name: URL_BROKER
+              valueFrom:
+                secretKeyRef:
+                  key: conn_broker
+                  name: gflex-hom-connect
+            - name: OTEL_EXPORTER_ENDPOINT
+              value: http://loki-tempo:14268/tempo/api/traces
+          ports:
+            - name: server
+              containerPort: 3303

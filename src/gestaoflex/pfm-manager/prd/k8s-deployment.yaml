@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: pfm-manager-container
-          image: gestaoflex/pfm-manager:1.0.7
+          image: gestaoflex/pfm-manager:1.0.2
           env:
             - name: URL_DATABASE
               valueFrom:
