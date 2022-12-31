@@ -14,7 +14,7 @@ metadata:
 spec:
   ingressClassName: kong
   rules:
-    - host: api.gestaoflex.net
+    - host: api.gestaoflex.com
       http:
         paths:
           - path: /pfm/auth
@@ -26,6 +26,6 @@ spec:
                   number: 3303
       
   tls:
-    - secretName: ssl-gflexnet
+    - secretName: ssl-gflexcom
       hosts:
-        - api.gestaoflex.net
+        - api.gestaoflex.com
